@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surat Untukmu 💌</title>
+<link href="https://googleapis.com" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(135deg, #161024 0%, #2b1d3b 100%);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 460px;
+    min-height: 620px;
+    background: #2b1c14;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 35px;
+    border: 2px solid #4e3626;
+  }
+
+  .window-frame {
+    height: 220px;
+    background: radial-gradient(circle at 75% 30%, #2b3a67 0%, #101528 80%);
+    position: relative;
+    border-bottom: 12px solid #5e3e28;
+    overflow: hidden;
+  }
+  .moon {
+    width: 34px; height: 34px;
+    background: #fefcd7;
+    border-radius: 50%;
+    position: absolute;
+    top: 32px; right: 65px;
+    box-shadow: 0 0 22px #fefcd7;
+  }
+  .hill {
+    position: absolute;
+    bottom: -25px; width: 120%; left: -10%;
+    height: 75px;
+    background: #182336;
+    border-radius: 50% 50% 0 0;
+  }
+  .curtain-left, .curtain-right {
+    position: absolute;
+    top: 0; width: 65px; height: 100%;
+    background: linear-gradient(to right, #6e1419, #961f26);
+    box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+  .curtain-left { left: 0; border-bottom-right-radius: 45px; }
+  .curtain-right { right: 0; border-bottom-left-radius: 45px; background: linear-gradient(to left, #6e1419, #961f26); box-shadow: -4px 0 15px rgba(0,0,0,0.5); }
+
+  .desk-items {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 32px;
+    margin-top: -32px;
+    position: relative;
+    z-index: 3;
+  }
+  .candle {
+    width: 18px; height: 42px;
+    background: #f5ebd6;
+    border-radius: 3px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+  .flame {
+    width: 10px; height: 17px;
+    background: #ffae00;
+    border-radius: 50% 50% 20% 20%;
+    position: absolute;
+    top: -19px; left: 4px;
+    box-shadow: 0 0 18px #ff9d00;
+    animation: flicker 1.2s infinite alternate;
+  }
+  @keyframes flicker {
+    0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+    100% { transform: scale(1.12) rotate(2deg); opacity: 1; }
+  }
+
+  .header-text {
+    text-align: center;
+    padding: 18px 20px 8px;
+  }
+  .header-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 2.2rem;
+    color: #f8e5c2;
+  }
+  .header-text p {
+    font-size: 0.95rem;
+    color: #d1bfa7;
+    margin-top: 4px;
+  }
+
+  .btn-gold {
+    display: block;
+    margin: 28px auto;
+    padding: 13px 32px;
+    background: linear-gradient(to bottom, #f4cd52, #d49e15);
+    color: #2b1d0e;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 18px rgba(212, 160, 23, 0.45);
+    transition: transform 0.2s, opacity 0.3s;
+  }
+  .btn-gold:hover { transform: scale(1.05); }
+
+  .flying-bird {
+    position: absolute;
+    width: 75px;
+    height: 75px;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+  .bird-wing {
+    transform-origin: 45px 40px;
+    animation: flap 0.22s infinite alternate ease-in-out;
+  }
+  @keyframes flap {
+    0% { transform: rotate(-28deg) scaleY(0.85); }
+    100% { transform: rotate(22deg) scaleY(1.1); }
+  }
+
+  .envelopes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 18px 22px;
+  }
+
+  .envelope-card {
+    background: #f5ecdc;
+    color: #3b2f2f;
+    padding: 18px 14px;
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.35);
+    border-top: 4px solid #c0392b;
+    opacity: 0;
+    transform: scale(0.4) translateY(-30px);
+    pointer-events: none;
+    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .envelope-card.delivered {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+  }
+  .envelope-card.delivered:hover {
+    transform: translateY(-5px) scale(1.02);
+  }
+  .pin {
+    width: 13px; height: 13px;
+    background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b);
+    border-radius: 50%;
+    position: absolute;
+    top: -6px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  }
+  .envelope-card small {
+    font-size: 0.72rem;
+    color: #7f6a58;
+    display: block;
+  }
+  .envelope-card h3 {
+    font-family: 'Caveat', cursive;
+    font-size: 1.45rem;
+    margin-top: 3px;
+    color: #2c1e16;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 10, 8, 0.88);
+    z-index: 30;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    flex-direction: column;
+  }
+
+  .closed-envelope-box {
+    text-align: center;
+    animation: popUp 0.35s ease;
+  }
+  .env-preview {
+    width: 280px;
+    height: 175px;
+    background: #f5ecdc;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 22px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 18px;
+    text-align: left;
+    color: #2c1e16;
+    overflow: hidden;
+  }
+  .env-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-top: 95px solid #e6dac3;
+  }
+  .wax-seal {
+    width: 36px; height: 36px;
+    background: #c0392b;
+    border-radius: 50%;
+    position: absolute;
+    top: 75px; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f8e5c2;
+    font-size: 0.9rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  }
+  .confirm-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+    color: #f8e5c2;
+  }
+  .btn-open-red {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    padding: 11px 36px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 15px rgba(192, 57, 43, 0.5);
+  }
+  .btn-not-yet {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: none;
+    color: #b8a696;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  .letter-paper {
+    display: none;
+    background: #fcf8f0;
+    color: #2c221e;
+    width: 100%;
+    max-width: 390px;
+    padding: 28px 24px;
+    border-radius: 8px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    position: relative;
+    background-image: repeating-linear-gradient(transparent, transparent 27px, #e5dec9 28px);
+    animation: unfold 0.45s ease;
+  }
+  @keyframes popUp {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes unfold {
+    from { transform: scaleY(0.3); opacity: 0; }
+    to { transform: scaleY(1); opacity: 1; }
+  }
+  .letter-tag {
+    font-size: 0.75rem;
+    color: #8c7866;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+  .letter-body {
+    font-family: 'Caveat', cursive;
+    font-size: 1.48rem;
+    line-height: 28px;
+    white-space: pre-line;
+  }
+  .close-btn {
+    margin-top: 24px;
+    width: 100%;
+    padding: 10px;
+    background: #3b2f2f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 1.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="mainCard">
+  <div class="flying-bird" id="swallowBird">
+    <svg viewBox="0 0 100 100" width="75" height="75">
+      <rect x="68" y="46" width="22" height="15" rx="2" fill="#f5ecdc" stroke="#c0392b" stroke-width="1.5"/>
+      <polyline points="68,46 79,54 90,46" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+      <polygon points="28,46 5,36 18,48 6,58 28,51" fill="#2980b9"/>
+      <ellipse cx="46" cy="48" rx="20" ry="11" fill="#3498db"/>
+      <path d="M32,52 Q48,60 62,50 Q48,55 32,52" fill="#ecf0f1"/>
+      <circle cx="64" cy="43" r="8" fill="#2980b9"/>
+      <polygon points="71,42 78,45 71,46" fill="#f39c12"/>
+      <circle cx="66" cy="41" r="1.5" fill="#fff"/>
+      <path class="bird-wing" d="M48,43 Q35,12 18,22 Q32,35 42,45 Z" fill="#1f618d"/>
+    </svg>
+  </div>
+
+  <div class="window-frame" id="windowArea">
+    <div class="curtain-left"></div>
+    <div class="curtain-right"></div>
+    <div class="moon"></div>
+    <div class="hill"></div>
+  </div>
+  
+  <div class="desk-items">
+    <div class="candle"><div class="flame"></div></div>
+    <div style="font-size: 1.5rem;">🪶</div>
+  </div>
+
+  <div class="header-text">
+    <h1>Untuk Kamu,</h1>
+    <p>Tiga surat kecil dari aku</p>
+  </div>
+
+  <button class="btn-gold" id="openWindowBtn" onclick="startBirdDelivery()">BUKA JENDELA</button>
+
+  <div class="envelopes-grid" id="envelopesGrid">
+    <div class="envelope-card" id="env-0" onclick="askToOpen(0)">
+      <div class="pin"></div>
+      <small>Buka saat</small>
+      <h3>kamu kangen aku</h3>
+    </div>
+    <div class="envelope-card" id="env-1" onclick="askToOpen(1)">
+      <div class="pin"></div>
+      <small>Buka saat</small>
+      <h3>harimu lagi berat</h3>
+    </div>
+    <div class="envelope-card" id="env-2" style="grid-column: span 2;" onclick="askToOpen(2)">
+      <div class="pin"></div>
+      <small>Buka saat</small>
